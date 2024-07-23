@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { badgeRules } = require('./badgeRules');
   
-const apiKey = "AIzaSyCMjGZC37WP_gWMG8Y30RRdAvDeDSh1xzk";
+const apiKey = process.env.GEMINI_API_KEY;
 const configuration = new GoogleGenerativeAI(apiKey);
 const modelName = "gemini-1.5-flash-latest";
 const model = configuration.getGenerativeModel({model : modelName});

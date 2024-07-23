@@ -8,19 +8,19 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = 4000;
 
 // Import routes
-const userRouter = require('./routes/user');
-const blogRouter = require('./routes/blog');
-const actionRouter = require('./routes/action');
-const userActionRouter = require('./routes/userAction');
-const categoryRouter = require('./routes/category');
-const recommendationRouter = require('./routes/recommendation');
-const notificationRouter = require('./routes/notification');
-const challengeRouter = require('./routes/challenge');
-const badgeRouter = require('./routes/badge');
-const challengeActionRouter = require('./routes/challengeAction');
+const userRouter = require('./src/routes/user');
+const blogRouter = require('./src/routes/blog');
+const actionRouter = require('./src/routes/action');
+const userActionRouter = require('./src/routes/userAction');
+const categoryRouter = require('./src/routes/category');
+const recommendationRouter = require('./src/routes/recommendation');
+const notificationRouter = require('./src/routes/notification');
+const challengeRouter = require('./src/routes/challenge');
+const badgeRouter = require('./src/routes/badge');
+const challengeActionRouter = require('./src/routes/challengeAction');
 
 // Use routes
 app.use('/api/v1/user', userRouter);
