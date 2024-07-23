@@ -2,35 +2,35 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const apiKey = process.env.GEMINI_API_KEY;
 const configuration = new GoogleGenerativeAI(apiKey);
-const modelName = "gemini-1.5-flash-latest";
+const modelName = 'gemini-1.5-flash-latest';
 const model = configuration.getGenerativeModel({model : modelName});
 
 const generateBlogPost = async (blogs) => {
   try {
-  const requestPayload = {
+    const requestPayload = {
       contents: [
-          {
-            role: 'model',
-            parts: [
-              {
-                text: `Perfrom an internet search and retrieve the most pressing climate change issues happening from all around the world. 
+        {
+          role: 'model',
+          parts: [
+            {
+              text: `Perfrom an internet search and retrieve the most pressing climate change issues happening from all around the world. 
                 Retrieve climate change specific data from last 1 year only and generate a blog post on one of the most pressing topic or events.
                 You are supposed to generate a blog post on a different topic each time. ${JSON.stringify(blogs)} are existing blog post titles. 
                 Generate something different from what already exists. There should not be duplicate or similar posts.`
-              }
-            ]
-          },
-          {
-              role: 'model',
-              parts: [
-                {
-                  text: `Generate a blog post specific to climate change and its impact based on current data. 
+            }
+          ]
+        },
+        {
+          role: 'model',
+          parts: [
+            {
+              text: `Generate a blog post specific to climate change and its impact based on current data. 
                   The post should have 4-5 detailed paragraphs. The post should have an appropriate and interesting title. 
                   Each paragraph should have at least 5-8 sentences each. Only include valid information that can be verified. 
                   Post should have an introductory paragraph, a body with 3 paragraphs and one paragraph for the conclusion.`
-                }
-              ]
             }
+          ]
+        }
       ],
       systemInstruction: `Language, grammar and tone should be very simple. Your writing style should be interesting and unique. 
       Write a compelling blog post, one that would make people want to read it and take charge. Be bold, interesting and unique.
@@ -43,6 +43,7 @@ const generateBlogPost = async (blogs) => {
     const parsedResponse = parseGeminiResponse(contentResponse);
     return parsedResponse;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error generating blog post using Gemini:', error);
     throw error;
   }
@@ -77,5 +78,5 @@ const parseGeminiResponse = (response) => {
 };
 
 module.exports = {
-    generateBlogPost
+  generateBlogPost
 };

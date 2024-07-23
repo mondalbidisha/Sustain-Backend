@@ -1,15 +1,14 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { z } = require('zod');
+
 const router = express.Router();
 
-// Middleware to use the extended Prisma Client with Accelerate
 router.use((req, res, next) => {
   req.prisma = new PrismaClient();
   next();
 });
 
-// get all actions
 router.get('/', async (req, res) => {
   try {
     const actions = await req.prisma.userAction.findMany();
@@ -29,7 +28,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// get action by id
 router.get('/:id', async (req, res) => {
   const userId = req.params.id;
   try {
@@ -79,6 +77,7 @@ router.post('/', async (req, res) => {
   const result = createUserActionInput.safeParse(body);
 
   if (!result.success) {
+    // eslint-disable-next-line no-console
     console.log(result.error);
     return res.status(400).json({
       message: 'Inputs incorrect',

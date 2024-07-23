@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 
@@ -20,15 +19,14 @@ const createChallengeActionInput = z.object({
 router.post('/log-challenge-action', async (req, res) => {
   const body = req.body;
   const { success, error } = createChallengeActionInput.safeParse(body);
-
   if (!success) {
+    // eslint-disable-next-line no-console
     console.log(error);
     return res.status(400).json({
-      message: "Invalid Inputs",
+      message: 'Invalid Inputs',
       error: error.errors,
     });
   }
-
   try {
     const challengeAction = await prisma.challengeAction.findFirst({
       where: {
@@ -36,11 +34,9 @@ router.post('/log-challenge-action', async (req, res) => {
         challengeId: body.challengeId,
       },
     });
-
     if (!challengeAction) {
       return res.status(400).json({ error: 'Action not part of the challenge.' });
     }
-
     const userAction = await prisma.userAction.create({
       data: {
         name: body.name,
@@ -51,16 +47,13 @@ router.post('/log-challenge-action', async (req, res) => {
         image: body.image,
       },
     });
-
     if (userAction) {
       const user = await prisma.user.findUnique({
         where: { id: body.userId },
       });
-
       const action = await prisma.action.findUnique({
         where: { id: body.actionId },
       });
-
       if (user && action) {
         await prisma.user.update({
           where: { id: body.userId },
@@ -73,38 +66,33 @@ router.post('/log-challenge-action', async (req, res) => {
             totalWasteSaved: user.totalWasteSaved + action.wasteSaved,
           },
         });
-
         const challengeActions = await prisma.challengeAction.findMany({
           where: { challengeId: body.challengeId },
         });
-
         const userActions = await prisma.userAction.findMany({
           where: { userId: body.userId },
         });
-
         const loggedActionIds = new Set(userActions.map((ua) => ua.actionId));
         const requiredActionIds = new Set(challengeActions.map((ca) => ca.actionId));
-
         const isCompleted = [...requiredActionIds].every(id => loggedActionIds.has(id));
-
         if (isCompleted) {
           await prisma.userChallenge.deleteMany({
             where: { userId: body.userId, challengeId: body.challengeId },
           });
         }
-
         return res.json({
           id: userAction.id,
-          message: "User action logged successfully",
-          challengeCompleted: isCompleted ? "Challenge completed successfully" : "Challenge not yet completed",
+          message: 'User action logged successfully',
+          challengeCompleted: isCompleted ? 'Challenge completed successfully' : 'Challenge not yet completed',
         });
       }
     } else {
-      return res.status(500).json({ error: "Failed to log challenge action" });
+      return res.status(500).json({ error: 'Failed to log challenge action' });
     }
   } catch (ex) {
+    // eslint-disable-next-line no-console
     console.error('Error logging challenge action:', ex);
-    return res.status(500).json({ error: "Something went wrong", stackTrace: ex });
+    return res.status(500).json({ error: 'Something went wrong', stackTrace: ex });
   }
 });
 

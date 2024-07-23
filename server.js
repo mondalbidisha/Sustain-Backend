@@ -10,7 +10,6 @@ app.use(bodyParser.json());
 
 const PORT = 4000;
 
-// Import routes
 const userRouter = require('./src/routes/user');
 const blogRouter = require('./src/routes/blog');
 const actionRouter = require('./src/routes/action');
@@ -22,7 +21,6 @@ const challengeRouter = require('./src/routes/challenge');
 const badgeRouter = require('./src/routes/badge');
 const challengeActionRouter = require('./src/routes/challengeAction');
 
-// Use routes
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/blog', blogRouter);
 app.use('/api/v1/action', actionRouter);
@@ -35,6 +33,7 @@ app.use('/api/v1/challengeAction', challengeActionRouter);
 app.use('/api/v1/badge', badgeRouter);
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server is running on port ${PORT}`);
 });
 

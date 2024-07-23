@@ -2,13 +2,11 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 
-// Middleware to use the extended Prisma Client with Accelerate
 router.use((req, res, next) => {
   req.prisma = new PrismaClient();
   next();
 });
 
-// get all action categories
 router.get('/', async (req, res) => {
   try {
     const categories = await req.prisma.category.findMany();
@@ -31,17 +29,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-// get action by id
 router.get('/:id', async (req, res) => {
   const categoryId = req.params.id;
-  const prisma = getDBInstance(req);
   try {
-    const categories = await prisma.action.findMany({
+    const categories = await req.prisma.action.findMany({
       where: {
         id: categoryId,
       },
     });
-
     if (categories.length > 0) {
       return res.json({
         payload: categories,

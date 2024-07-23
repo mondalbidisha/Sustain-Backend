@@ -8,26 +8,21 @@ const router = express.Router();
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// create a new user
 router.post('/signup', async (req, res) => {
   const body = req.body;
   const { success } = signupInput.safeParse(body);
-
   if (!success) {
     return res.status(411).json({
       message: 'Invalid email or password.',
     });
   }
-
   try {
     const user = await prisma.user.findFirst({
       where: { email: body.email },
     });
-
     if (user) {
       return res.status(409).json({ error: 'User with the email already exists' });
     }
-
     const newUser = await prisma.user.create({
       data: {
         email: body.email,
@@ -35,9 +30,7 @@ router.post('/signup', async (req, res) => {
         name: body.name,
       },
     });
-
     const token = jwt.sign({ id: newUser.id }, JWT_SECRET);
-
     return res.status(200).json({
       message: 'Sign up successful',
       jwt: token,
@@ -48,11 +41,10 @@ router.post('/signup', async (req, res) => {
       },
     });
   } catch (ex) {
-    return res.status(403).json({ error: 'Forbidden' });
+    return res.status(403).json({ error: 'Forbidden', stackTrace: ex });
   }
 });
 
-// sign in for an existing user
 router.post('/signin', async (req, res) => {
   const body = req.body;
   const { success } = signinInput.safeParse(body);
@@ -84,11 +76,10 @@ router.post('/signin', async (req, res) => {
       message: 'Sign in successful',
     });
   } catch (ex) {
-    return res.status(403).json({ error: 'Forbidden' });
+    return res.status(403).json({ error: 'Forbidden', stackTrace: ex });
   }
 });
 
-// get user by id
 router.get('/:id', async (req, res) => {
   const userId = req.params.id;
   try {
@@ -114,15 +105,13 @@ router.get('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Invalid userId' });
     }
   } catch (ex) {
-    return res.status(403).json({ error: 'Unauthorized request' });
+    return res.status(403).json({ error: 'Unauthorized request', stackTrace: ex });
   }
 });
 
-// get all users
 router.get('/', async (req, res) => {
   try {
     const users = await prisma.user.findMany();
-
     if (users.length > 0) {
       return res.json({
         payload: users,
@@ -135,14 +124,12 @@ router.get('/', async (req, res) => {
       });
     }
   } catch (ex) {
-    return res.status(403).json({ error: 'Forbidden' });
+    return res.status(403).json({ error: 'Forbidden', stackTrace: ex });
   }
 });
 
-// get challenges by user id
 router.get('/challenges/:id', async (req, res) => {
   const userId = req.params.id;
-
   try {
     const userWithChallenges = await prisma.user.findMany({
       where: { id: userId },
@@ -160,7 +147,6 @@ router.get('/challenges/:id', async (req, res) => {
         },
       },
     });
-
     if (!userWithChallenges) {
       return res.status(404).json({
         payload: [],
@@ -173,7 +159,7 @@ router.get('/challenges/:id', async (req, res) => {
       });
     }
   } catch (ex) {
-    return res.status(403).json({ error: 'Forbidden' });
+    return res.status(403).json({ error: 'Forbidden', stackTrace: ex });
   }
 });
 
@@ -186,15 +172,14 @@ router.post('/save-token', async (req, res) => {
   try {
     const body = req.body;
     const { success, error } = updateFcmTokenSchema.safeParse(body);
-
     if (!success) {
+      // eslint-disable-next-line no-console
       console.log(error);
       return res.status(400).json({
         error: 'Invalid Inputs',
         details: error.errors,
       });
     }
-
     const user = await prisma.user.update({
       where: { 
         id: body.userId 
@@ -203,7 +188,6 @@ router.post('/save-token', async (req, res) => {
         fcmToken: body.token 
       },
     });
-
     if (user) {
       return res.json({
         userId: user.id,
@@ -215,7 +199,7 @@ router.post('/save-token', async (req, res) => {
       });
     }
   } catch (ex) {
-    return res.status(403).json({ error: 'Something went wrong' });
+    return res.status(403).json({ error: 'Something went wrong', stackTrace: ex });
   }
 });
 

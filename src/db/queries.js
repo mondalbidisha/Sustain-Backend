@@ -1,5 +1,3 @@
-const { Prisma } = require('@prisma/client');
-
 /**
  * Builds a base query for fetching posts.
  * @returns {Object} The base query for posts.
