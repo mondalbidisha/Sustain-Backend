@@ -1,0 +1,112 @@
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider   = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  name          String?
+  details       String?
+  profilePic    String?
+  password      String
+  creationDate  DateTime        @default(now())
+  fcmToken      String?
+  UserAction    UserAction[]
+  UserBadges    UserBadge[]
+  UserChallenge UserChallenge[]
+
+  totalUserActions  Int   @default(0)
+  totalActionPoints Int   @default(0)
+  totalImpactPoints Int   @default(0)
+  totalCo2Saved     Float @default(0)
+  totalWaterSaved   Float @default(0)
+  totalWasteSaved   Float @default(0)
+}
+
+model Action {
+  id              String            @id @default(uuid())
+  name            String
+  description     String
+  actionPoints    Int
+  impactPoints    Int
+  co2Saved        Float // Amount of CO2 saved
+  waterSaved      Float // Amount of water saved
+  wasteSaved      Float // Amount of waste saved
+  Category        Category?          @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+  UserAction      UserAction[]
+  ChallengeAction ChallengeAction[]
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  Actions     Action[]
+}
+
+model UserAction {
+  id          String   @id @default(uuid())
+  name        String
+  impact      Int      @default(0)
+  userId      String
+  actionId    String
+  logDate     DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  action      Action   @relation(fields: [actionId], references: [id])
+  description String?
+  image       String? // URL or path to the image
+}
+
+model Post {
+  id            String   @id @default(uuid())
+  title         String
+  content       String
+  publishedDate DateTime @default(now())
+  published     Boolean  @default(false)
+  blogImage     String?
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  awardedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Challenge {
+  id               String            @id @default(uuid())
+  name             String
+  description      String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt @default(now())
+  UserChallenges   UserChallenge[]
+  ChallengeActions ChallengeAction[]
+}
+
+model UserChallenge {
+  id          String    @id @default(uuid())
+  userId      String
+  challengeId String
+  joinedAt    DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+}
+
+model ChallengeAction {
+  id          String    @id @default(uuid())
+  actionId    String
+  challengeId String
+  action      Action    @relation(fields: [actionId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+}
