@@ -22,11 +22,11 @@ const analyzeUserActions = async (userActions, allActions, allCategories) => {
               parts: [
                 {
                   text: "userActions are actions already logged by the user such as these " + 
-                        userActions.map(action => `UserAction: ${JSON.stringify(action)}`).join(' ') 
+                        userActions.map(action => `UserAction: ${JSON.stringify(action.name)}`).join(' ') 
                         + ' ' + "Action is the global list of all available actions. Using this data and the categories of each of these actions to recommend similar category actions that the user might be interested in." 
-                        + allActions.map(action => `Action: ${JSON.stringify(action)}`).join(' ')
+                        + allActions.map(action => `ActionName: ${JSON.stringify(action.name)}, ActionDescription: ${JSON.stringify(action.description)}`).join(' ')
                         + "ActionCategory is the category that an action belongs to. Use this to analyse the action logging pattern for a particular user and recommend similar actions that they may be interested in"
-                        + ' ' +  allCategories.map(category => `ActionCategory: ${JSON.stringify(category)}`).join(' ') 
+                        + ' ' +  allCategories.map(category => `ActionCategory: ${JSON.stringify(category.name)}`).join(' ') 
                 }
               ]
             }
