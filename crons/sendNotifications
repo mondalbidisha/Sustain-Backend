@@ -1,0 +1,21 @@
+// const fetchWithRetry = async (url: string, retries: number, delay: number): Promise<any> => {
+//   try {
+//     const response = await fetch(url);
+//     const parsed = await response.json();
+//     console.log(parsed);
+//   } catch (error) {
+//     console.log("Something went wrong, retrying...");
+//     if (retries > 0) {
+//       await new Promise((resolve) => setTimeout(resolve, delay));
+//       return fetchWithRetry(url, retries - 1, delay);
+//     } else {
+//       console.log("All retries failed.");
+//     }
+//   }
+// };
+
+// export default async function(interval: Interval) {
+//   await fetchWithRetry("https://sustain-backend.vercel.app/api/v1/notification/send", 5, 2000);
+// }
+
+// cron job hosted here - https://www.val.town/v/mondalbidisha/scarletJaguar
