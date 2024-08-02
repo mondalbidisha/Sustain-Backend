@@ -10,6 +10,8 @@ This backend service provides APIs for logging sustainability actions, sustainab
 3. Visualise real world measurable impact of various actions logged by users.
 4. Recommended Actions API, to send recommended actions to active users via firebase push notifications.
 5. Notifications API, to send reminder notifications to user's to increase engagement.
+6. Badge awarding API, to to award badges to user's based on ruleset and user actions logged.
+
 
 ## Getting Started
 
