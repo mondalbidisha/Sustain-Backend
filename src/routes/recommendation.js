@@ -17,7 +17,8 @@ router.get('/send', async (req, res) => {
     });
     if (allUsers.length > 0) {
       for (const user of allUsers) {
-        if (user.UserAction.length >= 5) {
+        // we can generate recommendations only if the user logs at least 10 actions
+        if (user.UserAction.length >= 10) {
           const allActions = await prisma.action.findMany({
             where: {
               categoryId: {
@@ -29,7 +30,11 @@ router.get('/send', async (req, res) => {
             },
           });
           const allCategories = await prisma.category.findMany();
-          const recommendedActions = await analyzeUserActions(user.UserAction, allActions, allCategories);
+          // get the 10 most recent userActions to make a recommendation
+          const recentUserActions = user.UserAction
+            .sort((a, b) => new Date(b.logDate) - new Date(a.logDate))
+            .slice(0, 10);
+          const recommendedActions = await analyzeUserActions(recentUserActions, allActions, allCategories);
           if (recommendedActions.title && recommendedActions.message) {
             const message = {
               notification: { 

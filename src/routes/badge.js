@@ -42,40 +42,44 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.get('/award/:id', async (req, res) => {
-  const userId = req.params.id;
+router.get('/award', async (req, res) => {
   try {
-    if (userId) {
-      const userActions = await req.prisma.userAction.findMany({
-        where: {
-          userId: userId,
+    const allUsers = await req.prisma.user.findMany({
+      include: {
+        UserAction: { 
+          include: { action: true }
         },
-      });
-      const userBadges = await req.prisma.userBadge.findMany({
-        where: {
-          userId: userId,
-        },
-      });
-      const badgeResponse = await verifyBadgeQualifications(userActions, userBadges);
-      const userBadge = await req.prisma.userBadge.create({
-        data: {
-          userId: userId,
-          name: badgeResponse.name,
-        },
-      });
-      if (userBadge && userBadge.id) {
-        return res.json({
-          payload: userBadge.id,
-          message: 'Badge awarded',
+      },
+    });
+    if (allUsers.length > 0) {
+      for (const user of allUsers) {
+        const userBadges = await req.prisma.userBadge.findMany({
+          where: {
+            userId: user.id,
+          },
         });
-      } else {
-        return res.status(422).json({
-          message: 'Something went wrong',
+        const badgeResponse = await verifyBadgeQualifications(user.UserAction, userBadges);
+        const userBadge = await req.prisma.userBadge.create({
+          data: {
+            userId: user.id,
+            name: badgeResponse.name,
+          },
         });
+        if (userBadge && userBadge.id) {
+          // eslint-disable-next-line no-console
+          console.log(`Badge awarded to ${user.id}`);
+        } else {
+          return res.status(422).json({
+            message: 'Something went wrong',
+          });
+        }
       }
+      return res.json({
+        message: 'Badge awarded to all users successfully',
+      });
     } else {
-      return res.status(403).json({
-        message: 'Invalid userId',
+      return res.status(404).json({
+        message: 'No Users found',
       });
     }
   } catch (ex) {

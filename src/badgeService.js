@@ -7,9 +7,9 @@ const modelName = 'gemini-1.5-flash-latest';
 const model = configuration.getGenerativeModel({model : modelName});
 
 const verifyBadgeQualifications = async (allUserActions, userBadges) => {
-  const allActionsText = allUserActions.map(action => `UserAction: ${JSON.stringify(action)}`).join(' ');
+  const allActionsText = allUserActions.map(action => `UserAction: ${JSON.stringify(action.name)}`).join(' ');
   const allBadgeRulesText = badgeRules.map(rule => `BadgeRule: ${JSON.stringify(rule)}`).join(' ');
-  const allUserBadges = userBadges.map(badge => `UserBadge: ${JSON.stringify(badge)}`).join(' ');
+  const allUserBadges = userBadges.map(badge => `UserBadge: ${JSON.stringify(badge.name)}`).join(' ');
 
   try {
     const requestPayload = {
@@ -21,9 +21,9 @@ const verifyBadgeQualifications = async (allUserActions, userBadges) => {
               text: 'You are a system that awards badges based on user actions logged by a particular user.' +
 										'BadgeRule description specifies on what basis a badge is to be awarded.' +
 										// eslint-disable-next-line max-len
-										'Each Rule has an actions array that defines the names of the actions that need to logged and the count parameter against each parameter defines how many times that particular action should be logged.' +
-										'You are supposed to use the action names specified in BadgeRules and the action names of all UserActions to make a decision' +
-										'Strictly follow the BadgeRule description and count inside actions array to decide whether a badge should be awarded or not.'
+										'Each Rule has the name of the badge and a description that describes which actions need to be logged and how many times that particular action should be logged.' +
+										'You are supposed to use the action names specified in BadgeRules and all UserActions to make a decision' +
+										'Strictly follow the BadgeRule description to decide whether a badge should be awarded or not.'
             }
           ]
         },
